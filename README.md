@@ -1,4 +1,4 @@
-#Console Alarm
+# Console Alarm
 
 ## Introduction
 **Console alarm** is a small alarm function for your console.
