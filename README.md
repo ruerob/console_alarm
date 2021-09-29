@@ -1,9 +1,8 @@
 # Console Alarm
-
-## Introduction
 **Console alarm** is a small alarm function for your console.
 
 ## Important
+* For now just tested on ubuntu.
 * Sox must be installed with 'sudo apt-get install sox' to get an alarm sound.
 
 ## Usage
