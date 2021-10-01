@@ -8,7 +8,7 @@
 * [PyGame](https://www.pygame.org/) and [NumPy](https://numpy.org) for creating the alarm sound.
 
 ## Usage
-It is usable with one or two numeric arguments
+**Console alarm** is usable with one or two numeric arguments
 
 ### One argument:
 If there is only one argument it is interpreted as minutes. The alarm will act
