@@ -11,8 +11,7 @@ from math import floor
 def _ring(seconds: int, /):
 	""" Rings the alarm for [seconds]
 	
-	[seconds] : int
-	
+	[seconds: int] How long is the alarm going to ring.
 	"""
 
 	# Initializing pygame for playing audio
@@ -32,7 +31,7 @@ def _ring(seconds: int, /):
 def _get_note(frequency: float, /):
 	""" Calculates the note and returns a Sound object.
 
-	[frequency] The frequency of the note e.g. 440 for A and 880 for A'
+	[frequency: float] The frequency of the note e.g. 440 for A and 880 for A'
 	"""
 
 	# How many sound frames are there per wave
@@ -48,8 +47,8 @@ def _get_note(frequency: float, /):
 def _play_note(sound: pygame.mixer.Sound, duration: int, /):
 	""" Plays the passed note for the passed duration.
 
-	[note] The Sound object containing the note.
-	[duration] The duration of the note in milliseconds.
+	[note: pygame.mixer.sound] The Sound object containing the note.
+	[duration: int] The duration of the note in milliseconds.
 	"""
 
 	sound.play(-1)
@@ -61,9 +60,9 @@ def start_alarm_clock(alarm_hour: int, alarm_min: int, /):
 	""" Starts an alarm that rings at the specified time.
 
 	e.g.: startAlarmClock(14,9)
-	[alarm_hour] the hour value of the time.
-	[alarm_min] the minute value of the time.
 
+	[alarm_hour: int] the hour value of the time.
+	[alarm_min: int] the minute value of the time.
 	"""
 	# Get the current time.
 	now = time.localtime()
@@ -132,8 +131,8 @@ def start_pomodoro(minutes: int, /):
 
 
 def _print_argument_error():
-	""" Prints the help text
-	"""
+	""" Prints the help text"""
+
 	print("Small alarm function for your console.")
 	print("Usable with one or two numeric arguments")
 	print()
