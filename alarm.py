@@ -1,8 +1,10 @@
 #!/usr/bin/env python3.9
 
-import os
 import sys
 import time
+import numpy
+import pygame
+import pygame.sndarray
 from math import floor
 
 
@@ -12,17 +14,47 @@ def _ring(seconds: int, /):
 	[seconds] : int
 	
 	"""
-	
+
+	# Initializing pygame for playing audio
+	pygame.mixer.pre_init(44100, -16, 1)
+	pygame.init()
+
+	# Load the notes we want to play
+	low = _get_note(261.63)
+	high = _get_note(392)
+
 	# Play the one second alarm sound for the passed number of seconds.
-	for i in range(seconds):
-		os.system('play -nq -t alsa synth {} sine {}'.format(0.125, 440))
-		os.system('play -nq -t alsa synth {} sine {}'.format(0.125, 880))
-		os.system('play -nq -t alsa synth {} sine {}'.format(0.125, 440))
-		os.system('play -nq -t alsa synth {} sine {}'.format(0.125, 880))
-		os.system('play -nq -t alsa synth {} sine {}'.format(0.125, 440))
-		os.system('play -nq -t alsa synth {} sine {}'.format(0.125, 880))
-		os.system('play -nq -t alsa synth {} sine {}'.format(0.125, 440))
-		os.system('play -nq -t alsa synth {} sine {}'.format(0.125, 880))
+	for i in range(seconds*10):
+		_play_note(high, 50)
+		_play_note(low, 50)
+
+
+def _get_note(frequency: float, /):
+	""" Calculates the note and returns a Sound object.
+
+	[frequency] The frequency of the note e.g. 440 for A and 880 for A'
+	"""
+
+	# How many sound frames are there per wave
+	frames = 44100/frequency
+
+	# Put the sawtooth frames into an array.
+	arr = numpy.array([16384 * (x % frames) / frames - 32768 for x in range(0, 44100)]).astype(numpy.int16)
+
+	# Return a Sound object created from the wave frame array.
+	return pygame.sndarray.make_sound(arr)
+
+
+def _play_note(sound: pygame.mixer.Sound, duration: int, /):
+	""" Plays the passed note for the passed duration.
+
+	[note] The Sound object containing the note.
+	[duration] The duration of the note in milliseconds.
+	"""
+
+	sound.play(-1)
+	pygame.time.delay(duration)
+	sound.stop()
 
 
 def start_alarm_clock(alarm_hour: int, alarm_min: int, /):
@@ -145,7 +177,7 @@ if __name__ == "__main__":
 		arg_minutes = (int(sys.argv[1]))
 		
 		# Check if the pomodoro is set to a reasonable time.
-		if arg_minutes > 0:
+		if arg_minutes >= 0:
 		
 			# Start the pomodoro.
 			start_pomodoro(arg_minutes)

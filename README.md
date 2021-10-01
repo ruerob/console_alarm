@@ -3,7 +3,9 @@
 
 ## Important
 * For now just tested on ubuntu.
-* [SoX](http://sox.sourceforge.net/) must be installed with 'sudo apt-get install sox' to get an alarm sound.
+
+## Dependencies
+* [PyGame](https://www.pygame.org/) and [NumPy](https://numpy.org) for creating the alarm sound.
 
 ## Usage
 It is usable with one or two numeric arguments
