@@ -23,9 +23,11 @@ def _ring(seconds: int, /):
 	high = _get_note(392)
 
 	# Play the one second alarm sound for the passed number of seconds.
-	for i in range(seconds*10):
-		_play_note(high, 50)
-		_play_note(low, 50)
+	for i in range(seconds):
+		for x in range(5):
+			_play_note(high, 50)
+			_play_note(low, 50)
+		pygame.time.delay(500)
 
 
 def _get_note(frequency: float, /):
