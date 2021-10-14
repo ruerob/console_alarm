@@ -30,10 +30,12 @@ def _ring(seconds: int, /):
 		pygame.time.delay(500)
 
 
-def _get_note(frequency: float, /):
+def _get_note(frequency: float, /) -> pygame.mixer.Sound:
 	""" Calculates the note and returns a Sound object.
 
 	[frequency: float] The frequency of the note e.g. 440 for A and 880 for A'
+
+	[returns: pygame.mixer.Sound] The calculated Sound object, that can be played.
 	"""
 
 	# How many sound frames are there per wave
@@ -58,6 +60,69 @@ def _play_note(sound: pygame.mixer.Sound, duration: int, /):
 	sound.stop()
 
 
+def print_time_until_alarm(seconds: int, /):
+	""" Prints the time until the alarm rings onto the console
+
+	e.g.: print_time_until_alarm(128)
+	> Alarm starts in 0 hour(s), 2 minute(s), and 8 second(s)
+
+	[seconds: int] The remaining seconds until the alarm rings.
+	"""
+
+	# Calc our user output.
+	needed_hour = floor(seconds / 3600)
+	needed_min = floor((seconds - (needed_hour * 3600)) / 60)
+	needed_sec = floor(seconds - needed_min * 60 - needed_hour * 3600)
+
+	# Here we inform the user on how long he have to wait for his alarm.
+	print("Alarm starts in {} hour(s), {} minute(s), and {} second(s)".format(needed_hour, needed_min, needed_sec))
+
+
+def calc_secs_to_time(hour: int, minutes: int, /) -> int:
+	""" Calculates the amount of seconds until the alarm is supposed to ring
+
+	e.g: calc_secs_to_tim(14, 9)
+
+	[hour: int] The clocks hour value at the alarm ring time.
+	[minutes: int] The clocks minute value at the alarm ring time.
+
+	[returns: int] Seconds remaining until the alarm rings.
+	"""
+
+	# Get the current time.
+	now = time.localtime()
+
+	# Put the hours and the minutes of the current time in variables.
+	current_hour = now.tm_hour
+	current_min = now.tm_min
+
+	# How many minutes do we have to wait?
+	needed_min = minutes - current_min
+
+	# If the value of minutes is smaller than the current times minutes.
+	# e.g when it is 14:09 and you set the alarm for 15:06
+	if needed_min < 0:
+		# We need a positive value for the seconds.
+		needed_min += 60
+		# And we reduce the hours we need to wait by one.
+		current_hour += 1
+
+	# Now we check how much hours there are until the alarm rings.
+	needed_hour = hour - current_hour
+
+	# If the hour value is smaller than hour current time, we have a day switch in it.
+	# e.g when it is 20:06 and you set the alarm for 19:06
+	if needed_hour < 0:
+		needed_hour += 24
+
+	# If the user wants to set the current time as an alarm.
+	if needed_hour == needed_min == 0:
+		needed_hour = 24
+
+	# Return the seconds remaining until the alarm rings.
+	return needed_min*60 + needed_hour*3600 - now.tm_sec
+
+
 def start_alarm_clock(alarm_hour: int, alarm_min: int, /):
 	""" Starts an alarm that rings at the specified time.
 
@@ -66,49 +131,19 @@ def start_alarm_clock(alarm_hour: int, alarm_min: int, /):
 	[alarm_hour: int] the hour value of the time.
 	[alarm_min: int] the minute value of the time.
 	"""
-	# Get the current time.
-	now = time.localtime()
-	
-	# Put the hours and the minutes of the current time in variables.
-	current_hour = now.tm_hour
-	current_min = now.tm_min 
-	
-	# How many minutes do we have to wait?
-	needed_min = alarm_min - current_min
-	
-	# If the value of minutes is smaller than the current times minutes.
-	# e.g when it is 14:09 and you set the alarm for 15:06
-	if needed_min < 0:
-		# We need a positive value for the seconds.
-		needed_min += 60
-		# And we reduce the hours we need to wait by one.
-		current_hour += 1
-	
-	# Now we check how much hours there are until the alarm rings.
-	needed_hour = alarm_hour - current_hour
-	
-	# If the hour value is smaller than hour current time, we have a day switch in it.
-	# e.g when it is 20:06 and you set the alarm for 19:06
-	if needed_hour < 0:
-		needed_hour += 24
-		
-	# If the user wants to set the current time as an alarm.
-	if needed_hour == needed_min == 0:
-		needed_hour = 24
 	
 	# Here we calc how many seconds we have to wait.
-	wait_seconds = needed_min*60 + needed_hour*3600 - now.tm_sec
-	
-	# And now we calc our user output.
-	needed_hour = floor(wait_seconds / 3600)
-	needed_min = floor((wait_seconds - (needed_hour*3600))/60)
-	needed_sec = floor(wait_seconds - needed_min*60 - needed_hour*3600)
-	
-	# Here we inform the user on how long he have to wait for his alarm.
-	print("Alarm starts in {} hour(s), {} minute(s), and {} second(s)".format(needed_hour, needed_min, needed_sec))
-	
+	wait_seconds = calc_secs_to_time(alarm_hour, alarm_min)
+
 	# Sleeping time!
-	time.sleep(wait_seconds)
+	while wait_seconds > 0:
+		wait_seconds = calc_secs_to_time(alarm_hour, alarm_min)
+		print_time_until_alarm(wait_seconds)
+		wait_seconds = wait_seconds - 60
+		if wait_seconds < 0:
+			time.sleep(60+wait_seconds)
+		else:
+			time.sleep(60)
 	
 	# And time to wake up!!
 	print("Wake up!!! <3")
@@ -120,7 +155,7 @@ def start_pomodoro(minutes: int, /):
 
 	[minutes: int] In how many minutes the alarm should start.
 	"""
-	
+
 	# Tell the user that the alarm will ring in the passed amount of minutes.
 	print("Alarm rings in {} minute(s)".format(minutes))
 	
