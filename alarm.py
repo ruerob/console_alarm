@@ -135,20 +135,29 @@ def start_alarm_clock(alarm_hour: int, alarm_min: int, alarm_sec: int = 0, /):
 	"""
 	
 	# Here we calc how many seconds we have to wait.
-	wait_seconds = calc_secs_to_time(alarm_hour, alarm_min, alarm_sec)
+	remaining_seconds = calc_secs_to_time(alarm_hour, alarm_min, alarm_sec)
 
 	# Sleeping time!
 	# While there are still seconds to wait
-	while wait_seconds > 0:
-		# calc how many seconds are still on the clock
-		wait_seconds = calc_secs_to_time(alarm_hour, alarm_min, alarm_sec)
+	while remaining_seconds > 0:
+		# Memorize the last count of remaining seconds
+		old_remaining_seconds = remaining_seconds
+
+		# Calc how many seconds are still on the clock
+		remaining_seconds = calc_secs_to_time(alarm_hour, alarm_min, alarm_sec)
+
+		# Check if os was hibernated during alarm ring
+		if old_remaining_seconds < remaining_seconds:
+			print('Missed alarm!')
+			return
+
 		# Tell the user about the waiting time
-		print_time_until_alarm(wait_seconds)
+		print_time_until_alarm(remaining_seconds)
 
 		# Check if there are less than 60 seconds left.
-		if wait_seconds < 60:
+		if remaining_seconds < 60:
 			# Sleep for the last seconds.
-			time.sleep(wait_seconds)
+			time.sleep(remaining_seconds)
 		else:
 			# Sleep for 60 seconds and check again
 			time.sleep(60)
