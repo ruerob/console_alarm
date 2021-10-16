@@ -8,6 +8,80 @@ import pygame.sndarray
 from math import floor
 
 
+def start_pomodoro(minutes: int, /):
+	""" Starts pomodorolike alarm
+
+	[minutes: int] In how many minutes the alarm should start.
+	"""
+
+	# Which time is it now
+	now = time.localtime()
+
+	# We take the currents time seconds value as alarm ring time
+	alarm_sec = now.tm_sec
+
+	# We take the current time minutes value and add the minutes the timer should be set to.
+	alarm_min = now.tm_min + minutes
+
+	# We take the current times hour.
+	alarm_hour = now.tm_hour
+
+	# For every 60 minutes, we add an hour to the alarm time.
+	while alarm_min >= 60:
+		alarm_min = alarm_min - 60
+		alarm_hour = alarm_hour + 1
+
+	# If the timer should ring the next day, we need to reduce the alarm hour by 24.
+	if alarm_hour > 23:
+		alarm_hour = alarm_hour - 24
+
+	# We set the alarm clock to the calculated time.
+	start_alarm_clock(alarm_hour, alarm_min, alarm_sec)
+
+
+def start_alarm_clock(alarm_hour: int, alarm_min: int, alarm_sec: int = 0, /):
+	""" Starts an alarm that rings at the specified time.
+
+	e.g.: startAlarmClock(14,9)
+
+	[alarm_hour: int] the hour value of the alarm time.
+	[alarm_min: int] the minute value of the alarm time.
+	[alarm_sec: int = 0] the seconds of the alarm time.
+	"""
+
+	# Here we calc how many seconds we have to wait.
+	remaining_seconds = calc_secs_to_time(alarm_hour, alarm_min, alarm_sec)
+
+	# Sleeping time!
+	# While there are still seconds to wait
+	while remaining_seconds > 0:
+		# Memorize the last count of remaining seconds
+		old_remaining_seconds = remaining_seconds
+
+		# Calc how many seconds are still on the clock
+		remaining_seconds = calc_secs_to_time(alarm_hour, alarm_min, alarm_sec)
+
+		# Check if os was hibernated during alarm ring
+		if old_remaining_seconds < remaining_seconds:
+			print('Missed alarm!')
+			return
+
+		# Tell the user about the waiting time
+		print_time_until_alarm(remaining_seconds)
+
+		# Check if there are less than 60 seconds left.
+		if remaining_seconds < 60:
+			# Sleep for the last seconds.
+			time.sleep(remaining_seconds)
+		else:
+			# Sleep for 60 seconds and check again
+			time.sleep(60)
+
+	# And time to wake up!!
+	print("Wake up!!! <3")
+	_ring(5)
+
+
 def _ring(seconds: int, /):
 	""" Rings the alarm for [seconds]
 	
@@ -124,86 +198,12 @@ def calc_secs_to_time(hour: int, minutes: int, seconds: int = 0, /) -> int:
 	return needed_min*60 + needed_hour*3600 - now.tm_sec + seconds
 
 
-def start_alarm_clock(alarm_hour: int, alarm_min: int, alarm_sec: int = 0, /):
-	""" Starts an alarm that rings at the specified time.
-
-	e.g.: startAlarmClock(14,9)
-
-	[alarm_hour: int] the hour value of the alarm time.
-	[alarm_min: int] the minute value of the alarm time.
-	[alarm_sec: int = 0] the seconds of the alarm time.
-	"""
-	
-	# Here we calc how many seconds we have to wait.
-	remaining_seconds = calc_secs_to_time(alarm_hour, alarm_min, alarm_sec)
-
-	# Sleeping time!
-	# While there are still seconds to wait
-	while remaining_seconds > 0:
-		# Memorize the last count of remaining seconds
-		old_remaining_seconds = remaining_seconds
-
-		# Calc how many seconds are still on the clock
-		remaining_seconds = calc_secs_to_time(alarm_hour, alarm_min, alarm_sec)
-
-		# Check if os was hibernated during alarm ring
-		if old_remaining_seconds < remaining_seconds:
-			print('Missed alarm!')
-			return
-
-		# Tell the user about the waiting time
-		print_time_until_alarm(remaining_seconds)
-
-		# Check if there are less than 60 seconds left.
-		if remaining_seconds < 60:
-			# Sleep for the last seconds.
-			time.sleep(remaining_seconds)
-		else:
-			# Sleep for 60 seconds and check again
-			time.sleep(60)
-	
-	# And time to wake up!!
-	print("Wake up!!! <3")
-	_ring(5)
-
-
-def start_pomodoro(minutes: int, /):
-	""" Starts pomodorolike alarm
-
-	[minutes: int] In how many minutes the alarm should start.
-	"""
-
-	# Which time is it now
-	now = time.localtime()
-
-	# We take the currents time seconds value as alarm ring time
-	alarm_sec = now.tm_sec
-
-	# We take the current time minutes value and add the minutes the timer should be set to.
-	alarm_min = now.tm_min + minutes
-
-	# We take the current times hour.
-	alarm_hour = now.tm_hour
-
-	# For every 60 minutes, we add an hour to the alarm time.
-	while alarm_min >= 60:
-		alarm_min = alarm_min - 60
-		alarm_hour = alarm_hour + 1
-
-	# If the timer should ring the next day, we need to reduce the alarm hour by 24.
-	if alarm_hour > 23:
-		alarm_hour = alarm_hour - 24
-
-	# We set the alarm clock to the calculated time.
-	start_alarm_clock(alarm_hour, alarm_min, alarm_sec)
-
-
-def _print_argument_error():
+def _print_help():
 	""" Prints the help text"""
 
 	print("")
 	print("Small alarm function for your console.")
-	print("Usable with one or two numeric arguments")
+	print("Usable with one or two numeric arguments.")
 	print("")
 	print("One argument:")
 	print("If there is only one argument it is interpreted as minutes. The alarm will act")
@@ -235,7 +235,7 @@ if __name__ == "__main__":
 
 		else:
 			# Else we tell the user how he can use this tool.
-			_print_argument_error()
+			_print_help()
 
 	# If the user entered two numeric parameter.
 	elif len(sys.argv) == 3 and sys.argv[1].isnumeric() and sys.argv[2].isnumeric():
@@ -251,9 +251,9 @@ if __name__ == "__main__":
 			start_alarm_clock(arg_hour, arg_minute)
 		else:
 			# Else we let the user know how to use this tool.
-			_print_argument_error()
+			_print_help()
 			
 	# Else there where the wrong number of arguments or they had the wrong type.
 	else:
 		# Show the help text.
-		_print_argument_error()
+		_print_help()
