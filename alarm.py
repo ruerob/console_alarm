@@ -50,7 +50,7 @@ def start_alarm_clock(alarm_hour: int, alarm_min: int, alarm_sec: int = 0, /):
 	"""
 
 	# Here we calc how many seconds we have to wait.
-	remaining_seconds = calc_secs_to_time(alarm_hour, alarm_min, alarm_sec)
+	remaining_seconds = _calc_secs_to_time(alarm_hour, alarm_min, alarm_sec)
 
 	# Define boolean variable to break the while loop
 	is_waiting_done = False
@@ -62,10 +62,10 @@ def start_alarm_clock(alarm_hour: int, alarm_min: int, alarm_sec: int = 0, /):
 		old_remaining_seconds = remaining_seconds
 
 		# Calc how many seconds are still on the clock
-		remaining_seconds = calc_secs_to_time(alarm_hour, alarm_min, alarm_sec)
+		remaining_seconds = _calc_secs_to_time(alarm_hour, alarm_min, alarm_sec)
 
 		# Tell the user about the waiting time
-		print_time_until_alarm(remaining_seconds)
+		_print_time_until_alarm(remaining_seconds)
 
 		# Check if os was hibernated during alarm ring
 		if old_remaining_seconds < remaining_seconds:
@@ -138,7 +138,7 @@ def _play_note(sound: pygame.mixer.Sound, duration: int, /):
 	sound.stop()
 
 
-def print_time_until_alarm(seconds: int, /):
+def _print_time_until_alarm(seconds: int, /):
 	""" Prints the time until the alarm rings onto the console
 
 	e.g.: print_time_until_alarm(128)
@@ -156,7 +156,7 @@ def print_time_until_alarm(seconds: int, /):
 	print("Alarm starts in {} hour(s), {} minute(s), and {} second(s)".format(needed_hour, needed_min, needed_sec))
 
 
-def calc_secs_to_time(hour: int, minutes: int, seconds: int = 0, /) -> int:
+def _calc_secs_to_time(hour: int, minutes: int, seconds: int = 0, /) -> int:
 	""" Calculates the amount of seconds until the alarm is supposed to ring
 
 	e.g: calc_secs_to_tim(14, 9)
