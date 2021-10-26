@@ -1,4 +1,39 @@
 #!/usr/bin/env python3.9
+""" A small console script to set a alarm clock.
+
+Summary
+-------
+	Small alarm function for your console. Usable with one (`minutes` like a pomodoro) or two
+	numeric arguments (`hh` `mm` sets alarm time).
+	Also usable as module. But for bigger projects another approach should be used,
+	because this one uses sleep and freezes the thread.
+
+Routine Listings
+----------------
+	start_pomodoro(minutes: int, /)
+		Starts pomodorolike alarm.
+
+	start_alarm_clock(alarm_hour: int, alarm_min: int, alarm_sec: int = 0, /)
+		Starts an alarm that rings at a specified time.
+
+	ring(seconds: int, /)
+		Rings the alarm for a given amount of seconds.
+
+Notes
+-----
+	This alarm clock checks every minute how long the script has to sleep until the
+	alarm rings. When less than a minute is left, the script waits for this period
+	of time and then rings.
+
+	This approach is not preferred for projects where you can set more than one
+	timer and where you want to stop timer before they ring.
+
+	Therefore I would suggest a list of active timer timestamps that are checked
+	periodically in background (every second or less) and start an alarm if the
+	current time passes one of the list values. After the alarm starts, this
+	timestamp could be set to a snooze (maybe 5 minutes) or get removed after the
+	user notices the alarm.
+"""
 
 import sys
 import time
@@ -11,8 +46,27 @@ from math import floor
 def start_pomodoro(minutes: int, /):
 	""" Starts pomodorolike alarm
 
-	[minutes: int] In how many minutes the alarm should start.
+	Parameters
+	----------
+	minutes : int
+		In how many minutes the alarm should start. Minutes has to be between 1 and 1439.
+
+	Raises
+	------
+	ValueError
+		If the minutes parameter isn't between 1 and 1439
+
+	See Also
+	--------
+	start_alarm_clock : Starts an alarm that rings at a specified time.
+
+	Example
+	-------
+	start_pomodoro(1409)
 	"""
+
+	# Check if parameter is in range.
+	_is_in_range(minutes, 1, 1439)
 
 	# Which time is it now
 	now = time.localtime()
@@ -40,14 +94,36 @@ def start_pomodoro(minutes: int, /):
 
 
 def start_alarm_clock(alarm_hour: int, alarm_min: int, alarm_sec: int = 0, /):
-	""" Starts an alarm that rings at the specified time.
+	""" Starts an alarm that rings at a specified time.
 
-	e.g.: startAlarmClock(14,9)
+	Parameters
+	----------
+	alarm_hour : int
+		The hour value of the alarm time.
+	alarm_min : int
+		The minute value of the alarm time.
+	alarm_sec : int
+		The seconds of the alarm time.
 
-	[alarm_hour: int] the hour value of the alarm time.
-	[alarm_min: int] the minute value of the alarm time.
-	[alarm_sec: int = 0] the seconds of the alarm time.
+	Raises
+	------
+	ValueError
+		If the hours parameter isn't between 0 and 23 or minutes or seconds
+		parameters aren't between 0 and 59
+
+	See Also
+	--------
+	start_pomodoro : Starts pomodorolike alarm
+
+	Example
+	-------
+	startAlarmClock(14,9)
 	"""
+
+	# Check if parameters are in range.
+	_is_in_range(alarm_hour, 0, 23)
+	_is_in_range(alarm_min, 0, 59)
+	_is_in_range(alarm_sec, 0, 59)
 
 	# Here we calc how many seconds we have to wait.
 	remaining_seconds = _calc_secs_to_time(alarm_hour, alarm_min, alarm_sec)
@@ -74,7 +150,7 @@ def start_alarm_clock(alarm_hour: int, alarm_min: int, alarm_sec: int = 0, /):
 
 		# Check if there are less than 60 seconds left.
 		if 60 >= remaining_seconds > 0:
-			# Sleep for the last seconds.
+			# Sleep for the last few seconds.
 			time.sleep(remaining_seconds)
 			is_waiting_done = True
 		elif remaining_seconds >= 60:
@@ -83,38 +159,70 @@ def start_alarm_clock(alarm_hour: int, alarm_min: int, alarm_sec: int = 0, /):
 
 	# And time to wake up!!
 	print("Wake up!!! <3")
+	ring(5)
+
+
+def ring(seconds: int, /):
+	""" Rings the alarm for a given amount of seconds.
+
+	Parameters
+	----------
+	seconds : int
+		How long is the alarm going to ring.
+
+	Raises
+	------
+	ValueError
+		If the seconds parameter isn't between 0 and 60.
+
+	Example
+	-------
 	_ring(5)
-
-
-def _ring(seconds: int, /):
-	""" Rings the alarm for [seconds]
-	
-	[seconds: int] How long is the alarm going to ring.
 	"""
+
+	# Check if parameter is in range.
+	_is_in_range(seconds, 0, 59)
 
 	# Initializing pygame for playing audio
 	pygame.mixer.pre_init(44100, -16, 1)
 	pygame.init()
 
 	# Load the notes we want to play
-	low = _get_note(261.63)
-	high = _get_note(392)
+	# C-4 (Do)
+	low = _get_note(261.626)
+
+	# G-4 (Sol)
+	high = _get_note(391.995)
 
 	# Play the one second alarm sound for the passed number of seconds.
 	for i in range(seconds):
-		for x in range(5):
-			_play_note(high, 50)
-			_play_note(low, 50)
+		for x in range(10):
+			_play_note(high, 25)
+			_play_note(low, 25)
 		pygame.time.delay(500)
 
 
 def _get_note(frequency: float, /) -> pygame.mixer.Sound:
 	""" Calculates the note and returns a Sound object.
 
-	[frequency: float] The frequency of the note e.g. 440 for A and 880 for A'
+	Parameters
+	----------
+	frequency : float
+		The frequency of the note e.g. 440 for A and 880 for A'
 
-	[returns: pygame.mixer.Sound] The calculated Sound object, that can be played.
+	Returns
+	-------
+	pygame.mixer.Sound
+		The calculated Sound object, that can be played.
+
+	Raises
+	------
+	ValueError
+		If the frequency parameter isn't between 1 and 44100.
 	"""
+
+	# Check if parameter is in range.
+	_is_in_range(floor(frequency), 1, 44099)
 
 	# How many sound frames are there per wave
 	frames = 44100/frequency
@@ -129,9 +237,25 @@ def _get_note(frequency: float, /) -> pygame.mixer.Sound:
 def _play_note(sound: pygame.mixer.Sound, duration: int, /):
 	""" Plays the passed note for the passed duration.
 
-	[note: pygame.mixer.sound] The Sound object containing the note.
-	[duration: int] The duration of the note in milliseconds.
+	Parameters
+	----------
+	sound : pygame.mixer.sound
+		The Sound object containing the note.
+	duration : int
+		The duration of the note in milliseconds.
+
+	Raises
+	------
+	ValueError
+		If duration is smaller than or equal 0.
+
+	Example
+	-------
+	_play_note(high_C, 50)
 	"""
+
+	# Check if parameter is in range.
+	_is_in_range(duration, 1)
 
 	sound.play(-1)
 	pygame.time.delay(duration)
@@ -141,11 +265,24 @@ def _play_note(sound: pygame.mixer.Sound, duration: int, /):
 def _print_time_until_alarm(seconds: int, /):
 	""" Prints the time until the alarm rings onto the console
 
-	e.g.: print_time_until_alarm(128)
-	> Alarm starts in 0 hour(s), 2 minute(s), and 8 second(s)
+	Parameters
+	----------
+	seconds : int
+		The remaining seconds until the alarm rings.
 
-	[seconds: int] The remaining seconds until the alarm rings.
+	Raises
+	------
+	ValueError
+		If the seconds parameter is smaller than 0.
+
+	Example
+	-------
+	print_time_until_alarm(128)
+	> Alarm starts in 0 hour(s), 2 minute(s), and 8 second(s)
 	"""
+
+	# Check if parameter is in range.
+	_is_in_range(seconds, 0)
 
 	# Calc our user output.
 	needed_hour = floor(seconds / 3600)
@@ -159,14 +296,34 @@ def _print_time_until_alarm(seconds: int, /):
 def _calc_secs_to_time(hour: int, minutes: int, seconds: int = 0, /) -> int:
 	""" Calculates the amount of seconds until the alarm is supposed to ring
 
-	e.g: calc_secs_to_tim(14, 9)
+	Parameters
+	----------
+	hour : int
+		The clocks hour value at the alarm ring time.
+	minutes : int
+		The clocks minute value at the alarm ring time.
+	seconds : int = 0
+		The clocks second value at the alarm ring time.
 
-	[hour: int] The clocks hour value at the alarm ring time.
-	[minutes: int] The clocks minute value at the alarm ring time.
-	[seconds: int = 0] The clocks second value at the alarm ring time.
+	Returns
+	-------
+	int
+		Seconds remaining until the alarm rings.
 
-	[returns: int] Seconds remaining until the alarm rings.
+	Raises
+	------
+		ValueError
+			If hour isn't between 0 and 23 or minutes or seconds aren't between 0 and 59.
+
+	Example
+	-------
+	_calc_secs_to_time(14, 9)
 	"""
+
+	# Check if parameters are in range.
+	_is_in_range(hour, 0, 23)
+	_is_in_range(minutes, 0, 60)
+	_is_in_range(seconds, 0, 60)
 
 	# Get the current time.
 	now = time.localtime()
@@ -202,8 +359,30 @@ def _calc_secs_to_time(hour: int, minutes: int, seconds: int = 0, /) -> int:
 	return needed_min*60 + needed_hour*3600 - now.tm_sec + seconds
 
 
+def _is_in_range(value: int, minimum: int = -sys.maxsize - 1, maximum: int = sys.maxsize, /):
+	""" Checks if value is in range and raises an exception if not.
+
+	Parameters
+	----------
+	value : int
+		The value that should be checked.
+	minimum : int
+		The smallest value the value parameter is allowed to have.
+	maximum : int
+		The biggest value the value parameter is allowed to have.
+
+	Raises
+	------
+	ValueError
+		If value is not between minimum and maximum.
+	"""
+
+	if not minimum <= value <= maximum:
+		raise ValueError
+
+
 def _print_help():
-	""" Prints the help text"""
+	""" Prints the help text. """
 
 	print("")
 	print("Small alarm function for your console.")
@@ -212,7 +391,7 @@ def _print_help():
 	print("One argument:")
 	print("If there is only one argument it is interpreted as minutes. The alarm will act")
 	print("as a pomodoro that rings after the set minutes. The maximum amount of minutes")
-	print("is 1439.")
+	print("is 1439 and the minimum is 1.")
 	print("")
 	print("Two arguments:")
 	print("With two arguments, you will set a alarm clock for a specified time.")
@@ -232,7 +411,7 @@ if __name__ == "__main__":
 		arg_minutes = (int(sys.argv[1]))
 
 		# Check if the pomodoro is set to a reasonable time.
-		if 0 <= arg_minutes < 1440:
+		if 1 <= arg_minutes < 1440:
 
 			# Start the pomodoro.
 			start_pomodoro(arg_minutes)
