@@ -22,6 +22,10 @@ If you set 14 09 as arguments, the alarm will start at 14:09.
 
 e.g. `./alarm 14 09`
 
+## API Docs
+For more information take a look at the documentation at
+[www.ruerob.com/console_alarm](http://www.ruerob.com/console_alarm).
+
 ## Nice to know
 On Ubuntu you can put this task into background with 'ctrl+z' and then run 'bg'
 Get it to the foreground again with fg
