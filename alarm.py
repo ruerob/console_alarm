@@ -1,38 +1,38 @@
 #!/usr/bin/env python3.9
-""" A small console script to set a alarm clock.
+""" A small console script to set an alarm clock.
 
 Summary
 -------
-	Small alarm function for your console. Usable with one (`minutes` like a pomodoro) or two
-	numeric arguments (`hh` `mm` sets alarm time).
-	Also usable as module. But for bigger projects another approach should be used,
-	because this one uses sleep and freezes the thread.
+	Small alarm function for your console. Usable with one ([minutes] like
+	a pomodoro) or two numeric arguments ([hh] [mm] sets alarm time).
+	Also usable as module. But for bigger projects another approach should
+	be used, because this one uses sleep and freezes the thread.
 
 Routine Listings
 ----------------
-	start_pomodoro(minutes: int, /)
+	start_pomodoro
 		Starts pomodorolike alarm.
 
-	start_alarm_clock(alarm_hour: int, alarm_min: int, alarm_sec: int = 0, /)
+	start_alarm_clock
 		Starts an alarm that rings at a specified time.
 
-	ring(seconds: int, /)
+	ring
 		Rings the alarm for a given amount of seconds.
 
 Notes
 -----
-	This alarm clock checks every minute how long the script has to sleep until the
-	alarm rings. When less than a minute is left, the script waits for this period
-	of time and then rings.
+	This alarm clock checks every minute how long the script has to sleep
+	until the alarm rings. When less than a minute is left, the script
+	waits for this period of time and then rings.
 
-	This approach is not preferred for projects where you can set more than one
-	timer and where you want to stop timer before they ring.
+	This approach is not preferred for projects where you can set more
+	than one timer and where you want to stop timer before they ring.
 
-	Therefore I would suggest a list of active timer timestamps that are checked
-	periodically in background (every second or less) and start an alarm if the
-	current time passes one of the list values. After the alarm starts, this
-	timestamp could be set to a snooze (maybe 5 minutes) or get removed after the
-	user notices the alarm.
+	Therefore I would suggest a list of active timer timestamps that are
+	checked periodically in background (every second or less) and start an
+	alarm if the current time passes one of the list values. After the
+	alarm starts, this timestamp could be set to a snooze (maybe 5
+	minutes) or get removed after the user notices the alarm.
 """
 
 import sys
@@ -44,21 +44,22 @@ from math import floor
 
 
 def start_pomodoro(minutes: int, /):
-	""" Starts pomodorolike alarm
+	""" Starts pomodorolike alarm.
 
 	Parameters
 	----------
 	minutes : int
-		In how many minutes the alarm should start. Minutes has to be between 1 and 1439.
+		In how many minutes the alarm should start. Minutes has to be
+		between 1 and 1439.
 
 	Raises
 	------
 	ValueError
-		If the minutes parameter isn't between 1 and 1439
+		If the minutes parameter isn't between 1 and 1439.
 
 	See Also
 	--------
-	start_alarm_clock : Starts an alarm that rings at a specified time.
+	start_alarm_clock
 
 	Example
 	-------
@@ -102,18 +103,19 @@ def start_alarm_clock(alarm_hour: int, alarm_min: int, alarm_sec: int = 0, /):
 		The hour value of the alarm time.
 	alarm_min : int
 		The minute value of the alarm time.
-	alarm_sec : int
-		The seconds of the alarm time.
+	alarm_sec : int, default = 0
+		The seconds of the alarm time. This parameter is optional and
+		defaults to 0.
 
 	Raises
 	------
 	ValueError
-		If the hours parameter isn't between 0 and 23 or minutes or seconds
-		parameters aren't between 0 and 59
+		If the [alarm_hours] parameter isn't between 0 and 23 or [alarm_min] or
+		[alarm_sec] parameters aren't between 0 and 59.
 
 	See Also
 	--------
-	start_pomodoro : Starts pomodorolike alarm
+	start_pomodoro
 
 	Example
 	-------
@@ -173,7 +175,7 @@ def ring(seconds: int, /):
 	Raises
 	------
 	ValueError
-		If the seconds parameter isn't between 0 and 60.
+		If the seconds parameter isn't between 0 and 59.
 
 	Example
 	-------
@@ -208,7 +210,7 @@ def _get_note(frequency: float, /) -> pygame.mixer.Sound:
 	Parameters
 	----------
 	frequency : float
-		The frequency of the note e.g. 440 for A and 880 for A'
+		The frequency of the note e.g. 440 for A and 880 for A'.
 
 	Returns
 	-------
@@ -228,7 +230,7 @@ def _get_note(frequency: float, /) -> pygame.mixer.Sound:
 	frames = 44100/frequency
 
 	# Put the sawtooth frames into an array.
-	arr = numpy.array([16384 * (x % frames) / frames - 32768 for x in range(0, 44100)]).astype(numpy.int16)
+	arr = numpy.array([16384 * (x % frames) / frames - 8192 for x in range(0, 44100)]).astype(numpy.int16)
 
 	# Return a Sound object created from the wave frame array.
 	return pygame.sndarray.make_sound(arr)
@@ -263,7 +265,7 @@ def _play_note(sound: pygame.mixer.Sound, duration: int, /):
 
 
 def _print_time_until_alarm(seconds: int, /):
-	""" Prints the time until the alarm rings onto the console
+	r""" Prints the time until the alarm rings onto the console.
 
 	Parameters
 	----------
@@ -294,7 +296,7 @@ def _print_time_until_alarm(seconds: int, /):
 
 
 def _calc_secs_to_time(hour: int, minutes: int, seconds: int = 0, /) -> int:
-	""" Calculates the amount of seconds until the alarm is supposed to ring
+	""" Calculates the amount of seconds until the alarm is supposed to ring.
 
 	Parameters
 	----------
@@ -302,7 +304,7 @@ def _calc_secs_to_time(hour: int, minutes: int, seconds: int = 0, /) -> int:
 		The clocks hour value at the alarm ring time.
 	minutes : int
 		The clocks minute value at the alarm ring time.
-	seconds : int = 0
+	seconds : int, optional = 0
 		The clocks second value at the alarm ring time.
 
 	Returns
@@ -366,9 +368,9 @@ def _is_in_range(value: int, minimum: int = -sys.maxsize - 1, maximum: int = sys
 	----------
 	value : int
 		The value that should be checked.
-	minimum : int
+	minimum : int, default = -sys.maxsize - 1
 		The smallest value the value parameter is allowed to have.
-	maximum : int
+	maximum : int, default = sys.maxsize
 		The biggest value the value parameter is allowed to have.
 
 	Raises
