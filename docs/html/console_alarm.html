@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.10.0" />
-<title>alarm API documentation</title>
+<title>console_alarm API documentation</title>
 <meta name="description" content="A small console script to set an alarm clock …" />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
@@ -19,7 +19,7 @@
 <main>
 <article id="content">
 <header>
-<h1 class="title">Module <code>alarm</code></h1>
+<h1 class="title">Module <code>console_alarm</code></h1>
 </header>
 <section id="section-intro">
 <p>A small console script to set an alarm clock.</p>
@@ -114,7 +114,7 @@ def start_pomodoro(minutes: int, /):
         Raises
         ------
         ValueError
-                If the minutes parameter isn&#39;t between 1 and 1439
+                If the minutes parameter isn&#39;t between 1 and 1439.
 
         See Also
         --------
@@ -162,15 +162,15 @@ def start_alarm_clock(alarm_hour: int, alarm_min: int, alarm_sec: int = 0, /):
                 The hour value of the alarm time.
         alarm_min : int
                 The minute value of the alarm time.
-        alarm_sec : int
+        alarm_sec : int, default = 0
                 The seconds of the alarm time. This parameter is optional and
                 defaults to 0.
 
         Raises
         ------
         ValueError
-                If the hours parameter isn&#39;t between 0 and 23 or minutes or
-                seconds parameters aren&#39;t between 0 and 59
+                If the [alarm_hours] parameter isn&#39;t between 0 and 23 or [alarm_min] or
+                [alarm_sec] parameters aren&#39;t between 0 and 59.
 
         See Also
         --------
@@ -269,7 +269,7 @@ def _get_note(frequency: float, /) -&gt; pygame.mixer.Sound:
         Parameters
         ----------
         frequency : float
-                The frequency of the note e.g. 440 for A and 880 for A&#39;
+                The frequency of the note e.g. 440 for A and 880 for A&#39;.
 
         Returns
         -------
@@ -289,7 +289,7 @@ def _get_note(frequency: float, /) -&gt; pygame.mixer.Sound:
         frames = 44100/frequency
 
         # Put the sawtooth frames into an array.
-        arr = numpy.array([16384 * (x % frames) / frames - 32768 for x in range(0, 44100)]).astype(numpy.int16)
+        arr = numpy.array([16384 * (x % frames) / frames - 8192 for x in range(0, 44100)]).astype(numpy.int16)
 
         # Return a Sound object created from the wave frame array.
         return pygame.sndarray.make_sound(arr)
@@ -324,7 +324,7 @@ def _play_note(sound: pygame.mixer.Sound, duration: int, /):
 
 
 def _print_time_until_alarm(seconds: int, /):
-        &#34;&#34;&#34; Prints the time until the alarm rings onto the console
+        r&#34;&#34;&#34; Prints the time until the alarm rings onto the console.
 
         Parameters
         ----------
@@ -355,7 +355,7 @@ def _print_time_until_alarm(seconds: int, /):
 
 
 def _calc_secs_to_time(hour: int, minutes: int, seconds: int = 0, /) -&gt; int:
-        &#34;&#34;&#34; Calculates the amount of seconds until the alarm is supposed to ring
+        &#34;&#34;&#34; Calculates the amount of seconds until the alarm is supposed to ring.
 
         Parameters
         ----------
@@ -363,7 +363,7 @@ def _calc_secs_to_time(hour: int, minutes: int, seconds: int = 0, /) -&gt; int:
                 The clocks hour value at the alarm ring time.
         minutes : int
                 The clocks minute value at the alarm ring time.
-        seconds : int = 0
+        seconds : int, optional = 0
                 The clocks second value at the alarm ring time.
 
         Returns
@@ -427,9 +427,9 @@ def _is_in_range(value: int, minimum: int = -sys.maxsize - 1, maximum: int = sys
         ----------
         value : int
                 The value that should be checked.
-        minimum : int
+        minimum : int, default = -sys.maxsize - 1
                 The smallest value the value parameter is allowed to have.
-        maximum : int
+        maximum : int, default = sys.maxsize
                 The biggest value the value parameter is allowed to have.
 
         Raises
@@ -510,7 +510,7 @@ if __name__ == &#34;__main__&#34;:
 <section>
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
-<dt id="alarm.ring"><code class="name flex">
+<dt id="console_alarm.ring"><code class="name flex">
 <span>def <span class="ident">ring</span></span>(<span>seconds: int, /)</span>
 </code></dt>
 <dd>
@@ -571,7 +571,7 @@ if __name__ == &#34;__main__&#34;:
                 pygame.time.delay(500)</code></pre>
 </details>
 </dd>
-<dt id="alarm.start_alarm_clock"><code class="name flex">
+<dt id="console_alarm.start_alarm_clock"><code class="name flex">
 <span>def <span class="ident">start_alarm_clock</span></span>(<span>alarm_hour: int, alarm_min: int, alarm_sec: int = 0, /)</span>
 </code></dt>
 <dd>
@@ -582,18 +582,18 @@ if __name__ == &#34;__main__&#34;:
 <dd>The hour value of the alarm time.</dd>
 <dt><strong><code>alarm_min</code></strong> :&ensp;<code>int</code></dt>
 <dd>The minute value of the alarm time.</dd>
-<dt><strong><code>alarm_sec</code></strong> :&ensp;<code>int</code></dt>
+<dt><strong><code>alarm_sec</code></strong> :&ensp;<code>int</code>, default <code>= 0</code></dt>
 <dd>The seconds of the alarm time. This parameter is optional and
 defaults to 0.</dd>
 </dl>
 <h2 id="raises">Raises</h2>
 <dl>
 <dt><code>ValueError</code></dt>
-<dd>If the hours parameter isn't between 0 and 23 or minutes or
-seconds parameters aren't between 0 and 59</dd>
+<dd>If the [alarm_hours] parameter isn't between 0 and 23 or [alarm_min] or
+[alarm_sec] parameters aren't between 0 and 59.</dd>
 </dl>
 <h2 id="see-also">See Also</h2>
-<p><code><a title="alarm.start_pomodoro" href="#alarm.start_pomodoro">start_pomodoro()</a></code></p>
+<p><code><a title="console_alarm.start_pomodoro" href="#console_alarm.start_pomodoro">start_pomodoro()</a></code></p>
 <h2 id="example">Example</h2>
 <p>startAlarmClock(14,9)</p></div>
 <details class="source">
@@ -609,15 +609,15 @@ seconds parameters aren't between 0 and 59</dd>
                 The hour value of the alarm time.
         alarm_min : int
                 The minute value of the alarm time.
-        alarm_sec : int
+        alarm_sec : int, default = 0
                 The seconds of the alarm time. This parameter is optional and
                 defaults to 0.
 
         Raises
         ------
         ValueError
-                If the hours parameter isn&#39;t between 0 and 23 or minutes or
-                seconds parameters aren&#39;t between 0 and 59
+                If the [alarm_hours] parameter isn&#39;t between 0 and 23 or [alarm_min] or
+                [alarm_sec] parameters aren&#39;t between 0 and 59.
 
         See Also
         --------
@@ -670,7 +670,7 @@ seconds parameters aren't between 0 and 59</dd>
         ring(5)</code></pre>
 </details>
 </dd>
-<dt id="alarm.start_pomodoro"><code class="name flex">
+<dt id="console_alarm.start_pomodoro"><code class="name flex">
 <span>def <span class="ident">start_pomodoro</span></span>(<span>minutes: int, /)</span>
 </code></dt>
 <dd>
@@ -684,10 +684,10 @@ between 1 and 1439.</dd>
 <h2 id="raises">Raises</h2>
 <dl>
 <dt><code>ValueError</code></dt>
-<dd>If the minutes parameter isn't between 1 and 1439</dd>
+<dd>If the minutes parameter isn't between 1 and 1439.</dd>
 </dl>
 <h2 id="see-also">See Also</h2>
-<p><code><a title="alarm.start_alarm_clock" href="#alarm.start_alarm_clock">start_alarm_clock()</a></code></p>
+<p><code><a title="console_alarm.start_alarm_clock" href="#console_alarm.start_alarm_clock">start_alarm_clock()</a></code></p>
 <h2 id="example">Example</h2>
 <p>start_pomodoro(1409)</p></div>
 <details class="source">
@@ -706,7 +706,7 @@ between 1 and 1439.</dd>
         Raises
         ------
         ValueError
-                If the minutes parameter isn&#39;t between 1 and 1439
+                If the minutes parameter isn&#39;t between 1 and 1439.
 
         See Also
         --------
@@ -762,9 +762,9 @@ between 1 and 1439.</dd>
 <ul id="index">
 <li><h3><a href="#header-functions">Functions</a></h3>
 <ul class="">
-<li><code><a title="alarm.ring" href="#alarm.ring">ring</a></code></li>
-<li><code><a title="alarm.start_alarm_clock" href="#alarm.start_alarm_clock">start_alarm_clock</a></code></li>
-<li><code><a title="alarm.start_pomodoro" href="#alarm.start_pomodoro">start_pomodoro</a></code></li>
+<li><code><a title="console_alarm.ring" href="#console_alarm.ring">ring</a></code></li>
+<li><code><a title="console_alarm.start_alarm_clock" href="#console_alarm.start_alarm_clock">start_alarm_clock</a></code></li>
+<li><code><a title="console_alarm.start_pomodoro" href="#console_alarm.start_pomodoro">start_pomodoro</a></code></li>
 </ul>
 </li>
 </ul>
