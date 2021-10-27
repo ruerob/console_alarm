@@ -55,7 +55,10 @@ def start_pomodoro(minutes: int, /):
 	Raises
 	------
 	ValueError
-		If the minutes parameter isn't between 1 and 1439.
+		If the [minutes] parameter isn't between 1 and 1439.
+
+	TypeError
+		If the [minutes] parameter is not int.
 
 	See Also
 	--------
@@ -110,8 +113,12 @@ def start_alarm_clock(alarm_hour: int, alarm_min: int, alarm_sec: int = 0, /):
 	Raises
 	------
 	ValueError
-		If the [alarm_hours] parameter isn't between 0 and 23 or [alarm_min] or
-		[alarm_sec] parameters aren't between 0 and 59.
+		If the [alarm_hours] parameter isn't between 0 and 23 or
+		[alarm_min] or [alarm_sec] parameters aren't between 0 and 59.
+
+	TypeError
+		If one of the [alarm_hour], [alarm_min] or [alarm_sec] parameters
+		is not int.
 
 	See Also
 	--------
@@ -165,17 +172,20 @@ def start_alarm_clock(alarm_hour: int, alarm_min: int, alarm_sec: int = 0, /):
 
 
 def ring(seconds: int, /):
-	""" Rings the alarm for a given amount of seconds.
+	""" Rings the alarm for a given amount of [seconds].
 
 	Parameters
 	----------
 	seconds : int
-		How long is the alarm going to ring.
+		How long the alarm is going to ring.
 
 	Raises
 	------
 	ValueError
-		If the seconds parameter isn't between 0 and 59.
+		If the [seconds] parameter isn't between 0 and 59.
+
+	TypeError
+		If the [seconds] parameter is not int.
 
 	Example
 	-------
@@ -220,11 +230,18 @@ def _get_note(frequency: float, /) -> pygame.mixer.Sound:
 	Raises
 	------
 	ValueError
-		If the frequency parameter isn't between 1 and 44100.
+		If the [frequency] parameter isn't between 1 and 44100.
+
+	TypeError
+		If the [frequency] parameter is not float or int.
 	"""
 
 	# Check if parameter is in range.
 	_is_in_range(floor(frequency), 1, 44099)
+
+	# Check if parameter has the correct type,
+	if not isinstance(frequency, (int, float)):
+		raise TypeError
 
 	# How many sound frames are there per wave
 	frames = 44100/frequency
@@ -241,7 +258,7 @@ def _play_note(sound: pygame.mixer.Sound, duration: int, /):
 
 	Parameters
 	----------
-	sound : pygame.mixer.sound
+	sound : pygame.mixer.Sound
 		The Sound object containing the note.
 	duration : int
 		The duration of the note in milliseconds.
@@ -251,13 +268,21 @@ def _play_note(sound: pygame.mixer.Sound, duration: int, /):
 	ValueError
 		If duration is smaller than or equal 0.
 
+	TypeError
+		If the [sound] parameter is not pygame.mixer.Sound or [duration]
+		is not int.
+
 	Example
 	-------
 	_play_note(high_C, 50)
 	"""
 
-	# Check if parameter is in range.
+	# Check if parameter [duration] is in range.
 	_is_in_range(duration, 1)
+
+	# Check parameter [sound] for correct type.
+	if not isinstance(sound, pygame.mixer.Sound):
+		raise TypeError
 
 	sound.play(-1)
 	pygame.time.delay(duration)
@@ -265,7 +290,7 @@ def _play_note(sound: pygame.mixer.Sound, duration: int, /):
 
 
 def _print_time_until_alarm(seconds: int, /):
-	r""" Prints the time until the alarm rings onto the console.
+	""" Prints the time until the alarm rings onto the console.
 
 	Parameters
 	----------
@@ -275,7 +300,10 @@ def _print_time_until_alarm(seconds: int, /):
 	Raises
 	------
 	ValueError
-		If the seconds parameter is smaller than 0.
+		If the [seconds] parameter is smaller than 0.
+
+	TypeError
+		If the [seconds] parameter is not int.
 
 	Example
 	-------
@@ -314,8 +342,13 @@ def _calc_secs_to_time(hour: int, minutes: int, seconds: int = 0, /) -> int:
 
 	Raises
 	------
-		ValueError
-			If hour isn't between 0 and 23 or minutes or seconds aren't between 0 and 59.
+	ValueError
+		If [hour] isn't between 0 and 23 or [minutes] or [seconds] aren't
+		between 0 and 59.
+
+	TypeError
+		If one of the [hour], [minutes] or [seconds] parameters is not
+		of type int.
 
 	Example
 	-------
@@ -369,19 +402,21 @@ def _is_in_range(value: int, minimum: int = -sys.maxsize - 1, maximum: int = sys
 	value : int
 		The value that should be checked.
 	minimum : int, default = -sys.maxsize - 1
-		The smallest value the value parameter is allowed to have.
+		The smallest value the [value] parameter is allowed to have.
 	maximum : int, default = sys.maxsize
-		The biggest value the value parameter is allowed to have.
+		The biggest value the [value] parameter is allowed to have.
 
 	Raises
 	------
 	ValueError
-		If value is not between minimum and maximum or either of them is
-		not int.
+		If [value] is not between [minimum] and [maximum].
+
+	TypeError
+		If [value], [minimum] or [maximum] is not int.
 	"""
 
 	if not (isinstance(value, int) and isinstance(minimum, int) and isinstance(maximum, int)):
-		raise ValueError
+		raise TypeError
 
 	if not minimum <= value <= maximum:
 		raise ValueError

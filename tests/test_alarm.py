@@ -16,7 +16,7 @@ class PomodoroTestCase(unittest.TestCase):
             console_alarm.start_pomodoro(1440)
 
     def test_start_pomodoro_with_floating_values(self):
-        with self.assertRaises(ValueError):
+        with self.assertRaises(TypeError):
             console_alarm.start_pomodoro(1.5)
 
     def test_start_pomodoro_with_not_numeric_values(self):
