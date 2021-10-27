@@ -72,29 +72,11 @@ def start_pomodoro(minutes: int, /):
 	# Check if parameter is in range.
 	_is_in_range(minutes, 1, 1439)
 
-	# Which time is it now
-	now = time.localtime()
-
-	# We take the currents time seconds value as alarm ring time
-	alarm_sec = now.tm_sec
-
-	# We take the current time minutes value and add the minutes the timer should be set to.
-	alarm_min = now.tm_min + minutes
-
-	# We take the current times hour.
-	alarm_hour = now.tm_hour
-
-	# For every 60 minutes, we add an hour to the alarm time.
-	while alarm_min >= 60:
-		alarm_min = alarm_min - 60
-		alarm_hour = alarm_hour + 1
-
-	# If the timer should ring the next day, we need to reduce the alarm hour by 24.
-	if alarm_hour > 23:
-		alarm_hour = alarm_hour - 24
+	# Add [minutes] to current time.
+	alarm = time.localtime(time.time()+minutes*60)
 
 	# We set the alarm clock to the calculated time.
-	start_alarm_clock(alarm_hour, alarm_min, alarm_sec)
+	start_alarm_clock(alarm.tm_hour, alarm.tm_min, alarm.tm_sec)
 
 
 def start_alarm_clock(alarm_hour: int, alarm_min: int, alarm_sec: int = 0, /):
@@ -182,7 +164,7 @@ def ring(seconds: int, /):
 	Raises
 	------
 	ValueError
-		If the [seconds] parameter isn't between 0 and 59.
+		If the [seconds] parameter isn't between 1 and 60.
 
 	TypeError
 		If the [seconds] parameter is not int.
@@ -193,7 +175,7 @@ def ring(seconds: int, /):
 	"""
 
 	# Check if parameter is in range.
-	_is_in_range(seconds, 0, 59)
+	_is_in_range(seconds, 1, 60)
 
 	# Initializing pygame for playing audio
 	pygame.mixer.pre_init(44100, -16, 1)
@@ -415,7 +397,8 @@ def _is_in_range(value: int, minimum: int = -sys.maxsize - 1, maximum: int = sys
 		If [value], [minimum] or [maximum] is not int.
 	"""
 
-	if not (isinstance(value, int) and isinstance(minimum, int) and isinstance(maximum, int)):
+	if not (isinstance(value, int) and isinstance(minimum, int) and isinstance(maximum, int))\
+		or isinstance(value, bool) or isinstance(minimum, bool) or isinstance(maximum, bool):
 		raise TypeError
 
 	if not minimum <= value <= maximum:
