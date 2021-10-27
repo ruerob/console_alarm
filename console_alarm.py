@@ -48,7 +48,7 @@ def start_pomodoro(minutes: int, /):
 
 	Parameters
 	----------
-	minutes : int
+	minutes : float
 		In how many minutes the alarm should start. Minutes has to be
 		between 1 and 1439.
 
@@ -376,8 +376,12 @@ def _is_in_range(value: int, minimum: int = -sys.maxsize - 1, maximum: int = sys
 	Raises
 	------
 	ValueError
-		If value is not between minimum and maximum.
+		If value is not between minimum and maximum or either of them is
+		not int.
 	"""
+
+	if not (isinstance(value, int) and isinstance(minimum, int) and isinstance(maximum, int)):
+		raise ValueError
 
 	if not minimum <= value <= maximum:
 		raise ValueError
