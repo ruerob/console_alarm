@@ -7,6 +7,12 @@
 ## Dependencies
 * [PyGame](https://www.pygame.org/) and [NumPy](https://numpy.org) for creating the alarm sound.
 
+## Installation
+
+### Using PIP
+
+`pip3 install console_alarm --user`
+
 ## Usage
 **Console alarm** is usable with one or two numeric arguments
 
@@ -14,13 +20,13 @@
 If there is only one argument it is interpreted as minutes. The alarm will act
 as a pomodoro that rings after the set minutes.
 
-e.g. `./alarm 5`
+e.g. `console_alarm 5`
 
 ### Two arguments:
 With two arguments, you will set an alarm clock for a specified time.
 If you set 14 09 as arguments, the alarm will start at 14:09.
 
-e.g. `./alarm 14 09`
+e.g. `console_alarm 14 09`
 
 ## Documentation
 For more information take a look at the documentation at

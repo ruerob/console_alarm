@@ -100,6 +100,7 @@ import numpy
 import pygame
 import pygame.sndarray
 from math import floor
+from typing import List
 
 
 def start_pomodoro(minutes: int, /):
@@ -484,14 +485,28 @@ def _print_help():
         print(&#34;Get it to the foreground again with fg&#34;)
 
 
-# If the module is run as a script.
-if __name__ == &#34;__main__&#34;:
+def console_entry_point(sys_args: List[str]):
+        &#34;&#34;&#34; Entry point for start from console.
+
+        Parameters
+        ----------
+        sys_args : The list of arguments the script was started with.
+
+        Raises
+        ------
+        ValueError
+                If [value] is not between [minimum] and [maximum].
+
+        TypeError
+                If sys_args is not list[str].
+
+        &#34;&#34;&#34;
 
         # If the user entered one numeric parameter.
-        if len(sys.argv) == 2 and sys.argv[1].isnumeric():
+        if len(sys_args) == 2 and sys_args[1].isnumeric():
 
                 # Load the parameter as minutes.
-                arg_minutes = (int(sys.argv[1]))
+                arg_minutes = (int(sys_args[1]))
 
                 # Check if the pomodoro is set to a reasonable time.
                 if 1 &lt;= arg_minutes &lt; 1440:
@@ -504,13 +519,13 @@ if __name__ == &#34;__main__&#34;:
                         _print_help()
 
         # If the user entered two numeric parameter.
-        elif len(sys.argv) == 3 and sys.argv[1].isnumeric() and sys.argv[2].isnumeric():
-        
+        elif len(sys_args) == 3 and sys_args[1].isnumeric() and sys_args[2].isnumeric():
+
                 # The first parameter is the hour value of the set time.
-                arg_hour = int(sys.argv[1])
+                arg_hour = int(sys_args[1])
                 # The second parameter is the minute value of the set time.
-                arg_minute = int(sys.argv[2])
-                
+                arg_minute = int(sys_args[2])
+
                 # Check if the hour and minute values are reasonable for a alarm clock time.
                 if arg_hour &gt;= 0 or arg_hour &lt; 24 or arg_minute &gt;= 0 or arg_minute &lt; 60:
                         # We start our alarm clock.
@@ -518,11 +533,16 @@ if __name__ == &#34;__main__&#34;:
                 else:
                         # Else we let the user know how to use this tool.
                         _print_help()
-                        
+
         # Else there where the wrong number of arguments or they had the wrong type.
         else:
                 # Show the help text.
-                _print_help()</code></pre>
+                _print_help()
+
+
+# If the module is run as a script.
+if __name__ == &#34;__main__&#34;:
+        console_entry_point(sys.argv)</code></pre>
 </details>
 </section>
 <section>
@@ -532,6 +552,79 @@ if __name__ == &#34;__main__&#34;:
 <section>
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
+<dt id="console_alarm.console_entry_point"><code class="name flex">
+<span>def <span class="ident">console_entry_point</span></span>(<span>sys_args: List[str])</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Entry point for start from console.</p>
+<h2 id="parameters">Parameters</h2>
+<p>sys_args : The list of arguments the script was started with.</p>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>ValueError</code></dt>
+<dd>If [value] is not between [minimum] and [maximum].</dd>
+<dt><code>TypeError</code></dt>
+<dd>If sys_args is not list[str].</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def console_entry_point(sys_args: List[str]):
+        &#34;&#34;&#34; Entry point for start from console.
+
+        Parameters
+        ----------
+        sys_args : The list of arguments the script was started with.
+
+        Raises
+        ------
+        ValueError
+                If [value] is not between [minimum] and [maximum].
+
+        TypeError
+                If sys_args is not list[str].
+
+        &#34;&#34;&#34;
+
+        # If the user entered one numeric parameter.
+        if len(sys_args) == 2 and sys_args[1].isnumeric():
+
+                # Load the parameter as minutes.
+                arg_minutes = (int(sys_args[1]))
+
+                # Check if the pomodoro is set to a reasonable time.
+                if 1 &lt;= arg_minutes &lt; 1440:
+
+                        # Start the pomodoro.
+                        start_pomodoro(arg_minutes)
+
+                else:
+                        # Else we tell the user how he can use this tool.
+                        _print_help()
+
+        # If the user entered two numeric parameter.
+        elif len(sys_args) == 3 and sys_args[1].isnumeric() and sys_args[2].isnumeric():
+
+                # The first parameter is the hour value of the set time.
+                arg_hour = int(sys_args[1])
+                # The second parameter is the minute value of the set time.
+                arg_minute = int(sys_args[2])
+
+                # Check if the hour and minute values are reasonable for a alarm clock time.
+                if arg_hour &gt;= 0 or arg_hour &lt; 24 or arg_minute &gt;= 0 or arg_minute &lt; 60:
+                        # We start our alarm clock.
+                        start_alarm_clock(arg_hour, arg_minute)
+                else:
+                        # Else we let the user know how to use this tool.
+                        _print_help()
+
+        # Else there where the wrong number of arguments or they had the wrong type.
+        else:
+                # Show the help text.
+                _print_help()</code></pre>
+</details>
+</dd>
 <dt id="console_alarm.ring"><code class="name flex">
 <span>def <span class="ident">ring</span></span>(<span>seconds: int, /)</span>
 </code></dt>
@@ -783,6 +876,7 @@ between 1 and 1439.</dd>
 <ul id="index">
 <li><h3><a href="#header-functions">Functions</a></h3>
 <ul class="">
+<li><code><a title="console_alarm.console_entry_point" href="#console_alarm.console_entry_point">console_entry_point</a></code></li>
 <li><code><a title="console_alarm.ring" href="#console_alarm.ring">ring</a></code></li>
 <li><code><a title="console_alarm.start_alarm_clock" href="#console_alarm.start_alarm_clock">start_alarm_clock</a></code></li>
 <li><code><a title="console_alarm.start_pomodoro" href="#console_alarm.start_pomodoro">start_pomodoro</a></code></li>

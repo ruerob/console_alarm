@@ -41,6 +41,7 @@ import numpy
 import pygame
 import pygame.sndarray
 from math import floor
+from typing import List
 
 
 def start_pomodoro(minutes: int, /):
@@ -425,14 +426,28 @@ def _print_help():
 	print("Get it to the foreground again with fg")
 
 
-# If the module is run as a script.
-if __name__ == "__main__":
+def console_entry_point(sys_args: List[str]):
+	""" Entry point for start from console.
+
+	Parameters
+	----------
+	sys_args : The list of arguments the script was started with.
+
+	Raises
+	------
+	ValueError
+		If [value] is not between [minimum] and [maximum].
+
+	TypeError
+		If sys_args is not list[str].
+
+	"""
 
 	# If the user entered one numeric parameter.
-	if len(sys.argv) == 2 and sys.argv[1].isnumeric():
+	if len(sys_args) == 2 and sys_args[1].isnumeric():
 
 		# Load the parameter as minutes.
-		arg_minutes = (int(sys.argv[1]))
+		arg_minutes = (int(sys_args[1]))
 
 		# Check if the pomodoro is set to a reasonable time.
 		if 1 <= arg_minutes < 1440:
@@ -445,13 +460,13 @@ if __name__ == "__main__":
 			_print_help()
 
 	# If the user entered two numeric parameter.
-	elif len(sys.argv) == 3 and sys.argv[1].isnumeric() and sys.argv[2].isnumeric():
-	
+	elif len(sys_args) == 3 and sys_args[1].isnumeric() and sys_args[2].isnumeric():
+
 		# The first parameter is the hour value of the set time.
-		arg_hour = int(sys.argv[1])
+		arg_hour = int(sys_args[1])
 		# The second parameter is the minute value of the set time.
-		arg_minute = int(sys.argv[2])
-		
+		arg_minute = int(sys_args[2])
+
 		# Check if the hour and minute values are reasonable for a alarm clock time.
 		if arg_hour >= 0 or arg_hour < 24 or arg_minute >= 0 or arg_minute < 60:
 			# We start our alarm clock.
@@ -459,8 +474,13 @@ if __name__ == "__main__":
 		else:
 			# Else we let the user know how to use this tool.
 			_print_help()
-			
+
 	# Else there where the wrong number of arguments or they had the wrong type.
 	else:
 		# Show the help text.
 		_print_help()
+
+
+# If the module is run as a script.
+if __name__ == "__main__":
+	console_entry_point(sys.argv)

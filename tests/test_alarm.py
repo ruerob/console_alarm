@@ -3,7 +3,7 @@ import time
 import sys
 
 sys.path.insert(0, "..")
-import console_alarm
+from console_alarm import console_alarm
 
 short_test = False
 
