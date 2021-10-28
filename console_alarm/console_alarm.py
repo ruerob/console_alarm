@@ -150,7 +150,6 @@ def start_alarm_clock(alarm_hour: int, alarm_min: int, alarm_sec: int = 0, /):
 			time.sleep(60)
 
 	# And time to wake up!!
-	print("Wake up!!! <3")
 	ring(5)
 
 
@@ -177,6 +176,9 @@ def ring(seconds: int, /):
 
 	# Check if parameter is in range.
 	_is_in_range(seconds, 1, 60)
+
+	# Console ring ! important for tests.
+	print("Wake up!!! <3")
 
 	# Initializing pygame for playing audio
 	pygame.mixer.pre_init(44100, -16, 1)
@@ -426,7 +428,7 @@ def _print_help():
 	print("Get it to the foreground again with fg")
 
 
-def console_entry_point(sys_args: List[str]):
+def console_script_entry_point(sys_args: List[str]):
 	""" Entry point for start from console.
 
 	Parameters
@@ -442,6 +444,10 @@ def console_entry_point(sys_args: List[str]):
 		If sys_args is not list[str].
 
 	"""
+
+	for argument_index in range(len(sys_args)):
+		if not isinstance(sys_args[argument_index], str):
+			raise TypeError
 
 	# If the user entered one numeric parameter.
 	if len(sys_args) == 2 and sys_args[1].isnumeric():
@@ -483,4 +489,4 @@ def console_entry_point(sys_args: List[str]):
 
 # If the module is run as a script.
 if __name__ == "__main__":
-	console_entry_point(sys.argv)
+	console_script_entry_point(sys.argv)

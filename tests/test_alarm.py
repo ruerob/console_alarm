@@ -1,11 +1,26 @@
 import unittest
 import time
 import sys
+import io
 
 sys.path.insert(0, "..")
 from console_alarm import console_alarm
 
 short_test = False
+
+
+def output_contains_help(text: str) -> bool:
+    return 'Small alarm function for your console.' in text
+
+
+def get_console_redirect() -> io.StringIO:
+    console_redirect = io.StringIO()
+    sys.stdout = console_redirect
+    return console_redirect
+
+
+def clean_console_redirect():
+    sys.stdout = sys.__stdout__
 
 
 class PomodoroTestCase(unittest.TestCase):
@@ -41,9 +56,9 @@ class PomodoroTestCase(unittest.TestCase):
         minutes = [1, 2]
         for minute_index in range(len(minutes)):
             with self.subTest(minute_index=minute_index):
-                timestamp: float = time.time()
+                start_time: float = time.time()
                 console_alarm.start_pomodoro(minutes[minute_index])
-                duration: float = time.time() - timestamp
+                duration: float = time.time() - start_time
                 with self.subTest():
                     self.assertGreater(duration, 60*(minute_index+1), "Pomodoro started to fast.")
                 with self.subTest():
@@ -90,10 +105,10 @@ class TestAlarmClock(unittest.TestCase):
 
     @unittest.skipIf(short_test, "Skipped long test")
     def test_start_alarm_clock_for_one_minute(self):
-        timestamp: float = time.time()
-        alarm_time = time.localtime(timestamp+60)
+        start_time: float = time.time()
+        alarm_time = time.localtime(start_time+60)
         console_alarm.start_alarm_clock(alarm_time.tm_hour, alarm_time.tm_min, alarm_time.tm_sec)
-        duration = time.time() - timestamp
+        duration = time.time() - start_time
         self.assertGreater(duration, 60)
         self.assertLess(duration, 66)
 
@@ -126,11 +141,86 @@ class TestRing(unittest.TestCase):
                     console_alarm.ring(out_of_range_values[value_index])
 
     def test_ring_with_correct_values(self):
-        timestamp: float = time.time()
+        console_redirect: io.StringIO = get_console_redirect()
+        start_time: float = time.time()
         console_alarm.ring(1)
-        duration: float = time.time() - timestamp
+        duration: float = time.time() - start_time
+        clean_console_redirect()
+        self.assertTrue("Wake up!!! <3" in console_redirect.getvalue())
         self.assertGreaterEqual(duration, 1)
         self.assertLessEqual(duration, 1.5)
+
+
+class TestConsoleScriptEntryPoint(unittest.TestCase):
+
+    def test_without_parameters(self):
+        with self.assertRaises(TypeError):
+            console_alarm.console_script_entry_point()
+
+    def test_with_one_parameter(self):
+        console_redirect: io.StringIO = get_console_redirect()
+        console_alarm.console_script_entry_point([""])
+        clean_console_redirect()
+        self.assertTrue(output_contains_help(console_redirect.getvalue()))
+
+    def test_with_wrong_parameter_types(self):
+        wrong_types = [1, 1.1, [], [1, 2], {}, True]
+        for type_index in range(len(wrong_types)):
+            for arg_count in range(2):
+                with self.subTest(type_index=type_index, arg_count=arg_count):
+                    with self.assertRaises(TypeError):
+                        args: list = [""]
+                        if arg_count == 0:
+                            args.append(wrong_types[type_index])
+                        else:
+                            args.append("2")
+                        if arg_count == 1:
+                            args.append(wrong_types[type_index])
+
+                        console_alarm.console_script_entry_point(args)
+
+    def test_with_wrong_string_parameters(self):
+        wrong_strings = ["a", "1.1", "-1", ""]
+        for string_index in range(len(wrong_strings)):
+            for arg_count in range(2):
+                with self.subTest(string_index=string_index, arg_count=arg_count):
+                    args: list = [""]
+                    if arg_count == 0:
+                        args.append(wrong_strings[string_index])
+                    else:
+                        args.append("2")
+                    if arg_count == 1:
+                        args.append(wrong_strings[string_index])
+
+                    console_redirect: io.StringIO = get_console_redirect()
+                    console_alarm.console_script_entry_point(["", wrong_strings[string_index]])
+                    clean_console_redirect()
+                    self.assertTrue(output_contains_help(console_redirect.getvalue()))
+
+    @unittest.skipIf(short_test, "Skipped long tests.")
+    def test_with_correct_parameter_one_second_index(self):
+        console_redirect: io.StringIO = get_console_redirect()
+        start_time: float = time.time()
+        console_alarm.console_script_entry_point(["", "1"])
+        duration: float = time.time() - start_time
+        clean_console_redirect()
+        self.assertTrue("Wake up!!! <3" in console_redirect.getvalue())
+        self.assertLessEqual(duration, 66)
+        self.assertGreaterEqual(duration, 60)
+
+    @unittest.skipIf(short_test, "Skipped long tests.")
+    def test_with_correct_parameter_one_third_index(self):
+        console_redirect: io.StringIO = get_console_redirect()
+        start_time: float = time.time()
+        alarm_time = time.localtime(start_time+60)
+        console_alarm.console_script_entry_point(["", "{}".format(alarm_time.tm_hour), "{}".format(alarm_time.tm_min)])
+        duration: float = time.time() - start_time
+        clean_console_redirect()
+        self.assertTrue("Wake up!!! <3" in console_redirect.getvalue())
+        self.assertLessEqual(duration, 66)
+        self.assertGreaterEqual(duration, 1)
+        self.assertLessEqual(time.localtime().tm_sec, 6)
+        self.assertGreaterEqual(time.localtime().tm_sec, 0)
 
 
 if __name__ == '__main__':
