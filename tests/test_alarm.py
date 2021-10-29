@@ -197,6 +197,26 @@ class TestConsoleScriptEntryPoint(unittest.TestCase):
                     clean_console_redirect()
                     self.assertTrue(output_contains_help(console_redirect.getvalue()))
 
+    def test_with_to_much_parameters(self):
+        some_parameters = ["a", "1.1", "-1", "", "45"]
+        for parameter_index in range(len(some_parameters)):
+            with self.subTest(parameter_index=parameter_index):
+                console_redirect = get_console_redirect()
+                console_alarm.console_script_entry_point(['', '10', '10', some_parameters[parameter_index]])
+                clean_console_redirect()
+                self.assertTrue(output_contains_help(console_redirect.getvalue()))
+        some_parameters = [1, 1.1, [], [1, 2], {}, True]
+        for parameter_index in range(len(some_parameters)):
+            with self.subTest(parameter_index=parameter_index):
+                with self.assertRaises(TypeError):
+                    console_alarm.console_script_entry_point(["", "10", "10", some_parameters[parameter_index]])
+
+        some_parameters = [1, 1.1, [], [1, 2], {}, True, "45"]
+        for parameter_index in range(len(some_parameters)):
+            with self.subTest(parameter_index=parameter_index):
+                with self.assertRaises(TypeError):
+                    console_alarm.console_script_entry_point(["", "10", "10"], some_parameters[parameter_index])
+
     @unittest.skipIf(short_test, "Skipped long tests.")
     def test_with_correct_parameter_one_second_index(self):
         console_redirect: io.StringIO = get_console_redirect()
