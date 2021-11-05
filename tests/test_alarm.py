@@ -205,6 +205,7 @@ class TestConsoleScriptEntryPoint(unittest.TestCase):
                 console_alarm.console_script_entry_point(['', '10', '10', some_parameters[parameter_index]])
                 clean_console_redirect()
                 self.assertTrue(output_contains_help(console_redirect.getvalue()))
+
         some_parameters = [1, 1.1, [], [1, 2], {}, True]
         for parameter_index in range(len(some_parameters)):
             with self.subTest(parameter_index=parameter_index):
